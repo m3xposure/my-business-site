@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engagement Gallery | M3xposure Photography & Videography</title>
+<meta name="description" content="Engagement photography gallery from M3xposure Photography & Videography.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="images/logos/logo-icon-only.png" alt="M3xposure Photography & Videography"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero page-hero">
+  <div class="container">
+    <div class="hero-eyebrow">Gallery</div>
+    <h1>Engagements</h1>
+  </div>
+</section>
+
+<section class="gallery">
+  <div class="container">
+    <div class="gallery-grid">
+      <div class="gallery-item large">
+        <img src="images/event-2.jpeg" alt="Couple embracing on a stone bridge" loading="eager">
+        <span class="gallery-caption">Couple embracing on a stone bridge</span>
+      </div>
+      <div class="gallery-item">
+        <img src="images/portrait-3.jpeg" alt="Couple portrait, side profile" loading="lazy">
+        <span class="gallery-caption">Couple portrait, side profile</span>
+      </div>
+      <div class="gallery-item">
+        <img src="images/portrait-4.jpeg" alt="Couple close-up portrait" loading="lazy">
+        <span class="gallery-caption">Couple close-up portrait</span>
+      </div>
+      <div class="gallery-item">
+        <img src="images/event-4.jpeg" alt="Couple portrait session outdoors" loading="lazy">
+        <span class="gallery-caption">Couple portrait session outdoors</span>
+      </div>
+      <div class="gallery-item">
+        <img src="images/event-5.jpeg" alt="Couple portrait outdoors at golden hour" loading="lazy">
+        <span class="gallery-caption">Couple portrait outdoors at golden hour</span>
+      </div>
+    </div>
+    <p class="gallery-note">Prefer a different vibe? <a href="gallery.html" style="color: var(--gold); font-weight: 600;">Browse the other galleries</a>.</p>
+  </div>
+</section>
+
+<footer>
+  &copy; <span id="year"></span> <span>M3xposure Photography &amp; Videography</span>. All rights reserved.
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <button class="lightbox-prev" id="lightboxPrev" aria-label="Previous photo">&#8249;</button>
+  <img id="lightboxImg" src="" alt="">
+  <button class="lightbox-next" id="lightboxNext" aria-label="Next photo">&#8250;</button>
+</div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+  galleryItems.forEach((item, i) => {
+    item.style.transitionDelay = `${Math.min(i, 8) * 60}ms`;
+  });
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  galleryItems.forEach(item => revealObserver.observe(item));
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const photos = galleryItems.map(item => {
+    const img = item.querySelector('img');
+    return { src: img.src, alt: img.alt };
+  });
+  let currentPhoto = 0;
+
+  function showPhoto(i) {
+    currentPhoto = (i + photos.length) % photos.length;
+    lightboxImg.src = photos[currentPhoto].src;
+    lightboxImg.alt = photos[currentPhoto].alt;
+  }
+
+  function openLightbox(i) {
+    showPhoto(i);
+    lightbox.classList.add('open');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+  }
+
+  galleryItems.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxPrev').addEventListener('click', () => showPhoto(currentPhoto - 1));
+  document.getElementById('lightboxNext').addEventListener('click', () => showPhoto(currentPhoto + 1));
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showPhoto(currentPhoto - 1);
+    if (e.key === 'ArrowRight') showPhoto(currentPhoto + 1);
+  });
+</script>
+
+</body>
+</html>

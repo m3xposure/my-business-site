@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M3xposure Photography & Videography</title>
+<meta name="description" content="M3xposure Photography & Videography — portraits, sports, events, and video production.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="images/logos/logo-icon-only.png" alt="M3xposure Photography & Videography"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div class="container">
+    <img src="images/logos/logo-mark.png" alt="M3xposure Photography & Videography" class="hero-logo">
+    <div class="hero-eyebrow">Photography &amp; Videography</div>
+  </div>
+</section>
+
+<section class="gallery" id="gallery">
+  <div class="container">
+    <div class="section-header">
+      <h2>Your Story Beautifully Exposed</h2>
+      <div class="eyebrow">Portfolio</div>
+    </div>
+
+    <div style="text-align:center; margin-bottom: 40px;">
+      <a href="contact.html" class="btn">Book a Session</a>
+      <a href="gallery.html" class="btn">View Full Galleries</a>
+    </div>
+
+    <div class="gallery-grid">
+      <a href="gallery-engagement.html" class="gallery-item teaser large">
+        <img src="images/portrait-4.jpeg" alt="Couple close-up portrait" loading="eager">
+        <span class="gallery-caption">Couple close-up portrait</span>
+      </a>
+      <a href="gallery-portraits.html" class="gallery-item teaser">
+        <img src="images/portrait-1.jpeg" alt="Close-up portrait" loading="lazy">
+        <span class="gallery-caption">Close-up portrait</span>
+      </a>
+      <a href="gallery-sports.html" class="gallery-item teaser">
+        <img src="images/sports-1.jpg" alt="Youth soccer player kicking the ball" loading="lazy">
+        <span class="gallery-caption">Youth soccer player kicking the ball</span>
+      </a>
+      <a href="gallery-portraits.html" class="gallery-item teaser">
+        <img src="images/portrait-2.jpeg" alt="Moody portrait among greenery" loading="lazy">
+        <span class="gallery-caption">Moody portrait among greenery</span>
+      </a>
+      <a href="gallery-wedding.html" class="gallery-item teaser large">
+        <img src="images/event-3.jpeg" alt="Bride getting ready before the ceremony" loading="lazy">
+        <span class="gallery-caption">Bride getting ready before the ceremony</span>
+      </a>
+      <a href="gallery-sports.html" class="gallery-item teaser">
+        <img src="images/sports-2.jpg" alt="Youth soccer player throwing the ball in" loading="lazy">
+        <span class="gallery-caption">Youth soccer player throwing the ball in</span>
+      </a>
+    </div>
+    <p class="gallery-note">A look at recent work across portraits, events, and sports.</p>
+    <div style="text-align:center; margin-top: 40px;">
+      <a href="contact.html" class="btn">Book a Session</a>
+      <a href="gallery.html" class="btn">View Full Galleries</a>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Testimonials</div>
+      <h2>What Clients Say</h2>
+    </div>
+    <div class="testimonials-grid" id="testimonialsContainer">
+      <p style="text-align:center; color:#8b95a6;">Loading testimonials&hellip;</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; <span id="year"></span> <span>M3xposure Photography &amp; Videography</span>. All rights reserved.
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // Scroll-reveal for gallery teaser tiles
+  const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
+  galleryItems.forEach((item, i) => {
+    item.style.transitionDelay = `${Math.min(i, 8) * 60}ms`;
+  });
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  galleryItems.forEach(item => revealObserver.observe(item));
+
+  // Testimonials are managed in a Google Sheet and pulled in live.
+  // Sheet: https://docs.google.com/spreadsheets/d/1S-vh4i9EwdveMqgBvm0Lx_G8sCUPp89YE8kGqZg_XdQ/edit
+  const TESTIMONIALS_CSV_URL = 'https://docs.google.com/spreadsheets/d/1S-vh4i9EwdveMqgBvm0Lx_G8sCUPp89YE8kGqZg_XdQ/export?format=csv';
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else { inQuotes = false; }
+        } else {
+          field += c;
+        }
+      } else if (c === '"') {
+        inQuotes = true;
+      } else if (c === ',') {
+        row.push(field); field = '';
+      } else if (c === '\n') {
+        row.push(field); rows.push(row); row = []; field = '';
+      } else if (c === '\r') {
+        // skip
+      } else {
+        field += c;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(r => r.some(cell => cell.trim() !== ''));
+  }
+
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function renderTestimonials(rows) {
+    const header = rows[0].map(h => h.trim().toLowerCase());
+    const idx = {
+      name: header.indexOf('name'),
+      type: header.indexOf('sessiontype'),
+      quote: header.indexOf('quote')
+    };
+    const container = document.getElementById('testimonialsContainer');
+    container.innerHTML = rows.slice(1).map((r) => {
+      const name = (r[idx.name] || '').trim();
+      const type = (r[idx.type] || '').trim();
+      const quote = (r[idx.quote] || '').trim();
+      return `<div class="testimonial-card">
+        <p class="testimonial-quote">&ldquo;${escapeHTML(quote)}&rdquo;</p>
+        <span class="testimonial-name">${escapeHTML(name)}</span>
+        ${type ? `<span class="testimonial-type">${escapeHTML(type)}</span>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  fetch(TESTIMONIALS_CSV_URL + '&_=' + Date.now())
+    .then((res) => {
+      if (!res.ok) throw new Error('Network response was not ok');
+      return res.text();
+    })
+    .then((text) => renderTestimonials(parseCSV(text)))
+    .catch(() => {
+      document.getElementById('testimonialsContainer').innerHTML =
+        '<p style="text-align:center; color:#8b95a6;">Testimonials coming soon.</p>';
+    });
+</script>
+
+</body>
+</html>

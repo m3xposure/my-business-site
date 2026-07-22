@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery | M3xposure Photography & Videography</title>
+<meta name="description" content="Browse portrait, sports, event, wedding, and engagement galleries from M3xposure Photography & Videography.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="images/logos/logo-icon-only.png" alt="M3xposure Photography & Videography"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero page-hero hero-gallery">
+  <div class="container">
+    <div class="hero-eyebrow">Portfolio</div>
+    <h1>Explore Our Work</h1>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Browse By Category</div>
+      <h2>Choose a Gallery</h2>
+      <p>Every session is different — take a look through each collection to see the kind of work we deliver.</p>
+    </div>
+
+    <div class="category-grid">
+      <a href="gallery-portraits.html" class="category-card">
+        <img src="images/portrait-2.jpeg" alt="Portrait photography gallery" loading="lazy">
+        <div class="category-label">
+          <h3>Portraits</h3>
+          <span>View Gallery</span>
+        </div>
+      </a>
+      <a href="gallery-sports.html" class="category-card">
+        <img src="images/sports-1.jpg" alt="Sports photography gallery" loading="lazy">
+        <div class="category-label">
+          <h3>Sports</h3>
+          <span>View Gallery</span>
+        </div>
+      </a>
+      <a href="gallery-events.html" class="category-card placeholder">
+        <div class="category-label">
+          <h3>Events</h3>
+          <span>Coming Soon</span>
+        </div>
+      </a>
+      <a href="gallery-wedding.html" class="category-card">
+        <img src="images/event-1.jpeg" alt="Wedding photography gallery" loading="lazy">
+        <div class="category-label">
+          <h3>Weddings</h3>
+          <span>View Gallery</span>
+        </div>
+      </a>
+      <a href="gallery-engagement.html" class="category-card">
+        <img src="images/event-2.jpeg" alt="Engagement photography gallery" loading="lazy">
+        <div class="category-label">
+          <h3>Engagements</h3>
+          <span>View Gallery</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; <span id="year"></span> <span>M3xposure Photography &amp; Videography</span>. All rights reserved.
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  const cards = Array.from(document.querySelectorAll('.category-card'));
+  cards.forEach((card, i) => { card.style.transitionDelay = `${i * 100}ms`; });
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  cards.forEach(card => revealObserver.observe(card));
+</script>
+
+</body>
+</html>

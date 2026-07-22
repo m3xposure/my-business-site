@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services & Pricing | M3xposure Photography & Videography</title>
+<meta name="description" content="Portrait, sports, event, and videography packages from M3xposure Photography & Videography.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo"><img src="images/logos/logo-icon-only.png" alt="M3xposure Photography & Videography"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="services.html" class="active">Services</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero page-hero">
+  <div class="container">
+    <div class="hero-eyebrow">Services &amp; Pricing</div>
+    <h1>Sessions &amp; Packages</h1>
+    <p>Every package includes professional editing and an online gallery. Reach out for custom quotes on anything not listed below.</p>
+  </div>
+</section>
+
+<section id="services">
+  <div class="container" id="servicesContainer">
+    <p style="text-align:center; color:#8b95a6;">Loading services&hellip;</p>
+  </div>
+</section>
+
+<section class="contact">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">Get In Touch</div>
+      <h2>Ready to Book?</h2>
+      <p>Send us the details of your project and we'll follow up with next steps.</p>
+    </div>
+    <a href="contact.html" class="btn">Start Your Inquiry</a>
+  </div>
+</section>
+
+<footer>
+  &copy; <span id="year"></span> <span>M3xposure Photography &amp; Videography</span>. All rights reserved.
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // Services & pricing are managed in a Google Sheet and pulled in live.
+  // Sheet: https://docs.google.com/spreadsheets/d/1bFAemPSHHuJzfnDRPKtSGcqHvAnfbW0YyrZqX_0EEwQ/edit
+  const SERVICES_CSV_URL = 'https://docs.google.com/spreadsheets/d/1bFAemPSHHuJzfnDRPKtSGcqHvAnfbW0YyrZqX_0EEwQ/export?format=csv';
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else { inQuotes = false; }
+        } else {
+          field += c;
+        }
+      } else if (c === '"') {
+        inQuotes = true;
+      } else if (c === ',') {
+        row.push(field); field = '';
+      } else if (c === '\n') {
+        row.push(field); rows.push(row); row = []; field = '';
+      } else if (c === '\r') {
+        // skip
+      } else {
+        field += c;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(r => r.some(cell => cell.trim() !== ''));
+  }
+
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function renderServices(rows) {
+    const header = rows[0].map(h => h.trim().toLowerCase());
+    const idx = {
+      category: header.indexOf('category'),
+      name: header.indexOf('name'),
+      price: header.indexOf('price'),
+      details: header.indexOf('details'),
+      note: header.indexOf('note'),
+      type: header.indexOf('type')
+    };
+
+    const groups = [];
+    const groupMap = {};
+    rows.slice(1).forEach((r) => {
+      const category = (r[idx.category] || '').trim();
+      if (!category) return;
+      if (!groupMap[category]) {
+        groupMap[category] = { name: category, items: [] };
+        groups.push(groupMap[category]);
+      }
+      groupMap[category].items.push({
+        name: (r[idx.name] || '').trim(),
+        price: (r[idx.price] || '').trim(),
+        details: (r[idx.details] || '').trim(),
+        note: (r[idx.note] || '').trim(),
+        type: (r[idx.type] || 'card').trim().toLowerCase()
+      });
+    });
+
+    const container = document.getElementById('servicesContainer');
+    container.innerHTML = groups.map((group) => {
+      const isAddons = group.items[0] && group.items[0].type === 'addon';
+      const itemsHTML = isAddons
+        ? `<div class="addons-list">${group.items.map((item) => `
+          <div class="addon-row">
+            <div><h4>${escapeHTML(item.name)}</h4><p>${escapeHTML(item.details)}</p></div>
+            <span class="price">${escapeHTML(item.price)}</span>
+          </div>`).join('')}</div>`
+        : `<div class="cards-grid">${group.items.map((item) => `
+          <div class="card" tabindex="0">
+            <div class="card-top"><h4>${escapeHTML(item.name)}</h4><span class="price">${escapeHTML(item.price)}</span></div>
+            <p>${escapeHTML(item.details)}</p>
+            ${item.note ? `<p class="note">${escapeHTML(item.note)}</p>` : ''}
+          </div>`).join('')}</div>`;
+      return `<div class="services-group"><h3>${escapeHTML(group.name)}</h3>${itemsHTML}</div>`;
+    }).join('');
+  }
+
+  fetch(SERVICES_CSV_URL + '&_=' + Date.now())
+    .then((res) => {
+      if (!res.ok) throw new Error('Network response was not ok');
+      return res.text();
+    })
+    .then((text) => renderServices(parseCSV(text)))
+    .catch(() => {
+      document.getElementById('servicesContainer').innerHTML =
+        '<p style="text-align:center; color:#8b95a6;">Pricing is temporarily unavailable. Please <a href="contact.html" style="color: var(--gold); font-weight: 600;">contact us</a> for current rates.</p>';
+    });
+</script>
+
+</body>
+</html>
