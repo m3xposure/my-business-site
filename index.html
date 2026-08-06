@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="home">
 
 <header>
   <nav>
@@ -27,49 +27,49 @@
   </nav>
 </header>
 
-<section class="hero" id="top">
+<section class="hero hero-home" id="top">
   <div class="container">
-    <img src="images/logos/logo-mark.png" alt="M3xposure Photography & Videography" class="hero-logo">
     <div class="hero-eyebrow">Photography &amp; Videography</div>
+    <h1>Your Story Beautifully Exposed</h1>
+    <p>Portraits, weddings &amp; sports across the DMV.</p>
+    <div class="hero-cta">
+      <a href="contact.html" class="btn">Book a Session</a>
+      <a href="gallery.html" class="text-link">View work &rarr;</a>
+    </div>
   </div>
 </section>
 
 <section class="gallery" id="gallery">
   <div class="container">
     <div class="section-header">
-      <h2>Your Story Beautifully Exposed</h2>
       <div class="eyebrow">Portfolio</div>
-    </div>
-
-    <div style="text-align:center; margin-bottom: 40px;">
-      <a href="contact.html" class="btn">Book a Session</a>
-      <a href="gallery.html" class="btn">View Full Galleries</a>
+      <h2>Recent Work</h2>
     </div>
 
     <div class="gallery-grid">
       <a href="gallery-engagement.html" class="gallery-item teaser large">
         <img src="images/portrait-4.jpeg" alt="Couple close-up portrait" loading="eager">
-        <span class="gallery-caption">Couple close-up portrait</span>
+        <span class="gallery-caption">Engagement</span>
       </a>
       <a href="gallery-portraits.html" class="gallery-item teaser">
         <img src="images/portrait-1.jpeg" alt="Close-up portrait" loading="lazy">
-        <span class="gallery-caption">Close-up portrait</span>
+        <span class="gallery-caption">Portraits</span>
       </a>
       <a href="gallery-sports.html" class="gallery-item teaser">
         <img src="images/sports-1.jpg" alt="Youth soccer player kicking the ball" loading="lazy">
-        <span class="gallery-caption">Youth soccer player kicking the ball</span>
+        <span class="gallery-caption">Sports</span>
       </a>
       <a href="gallery-portraits.html" class="gallery-item teaser">
         <img src="images/portrait-2.jpeg" alt="Moody portrait among greenery" loading="lazy">
-        <span class="gallery-caption">Moody portrait among greenery</span>
+        <span class="gallery-caption">Portraits</span>
       </a>
       <a href="gallery-wedding.html" class="gallery-item teaser large">
         <img src="images/event-3.jpeg" alt="Bride getting ready before the ceremony" loading="lazy">
-        <span class="gallery-caption">Bride getting ready before the ceremony</span>
+        <span class="gallery-caption">Wedding</span>
       </a>
       <a href="gallery-sports.html" class="gallery-item teaser">
         <img src="images/sports-2.jpg" alt="Youth soccer player throwing the ball in" loading="lazy">
-        <span class="gallery-caption">Youth soccer player throwing the ball in</span>
+        <span class="gallery-caption">Sports</span>
       </a>
     </div>
     <p class="gallery-note">A look at recent work across portraits, events, and sports.</p>
@@ -102,6 +102,12 @@
   const navLinks = document.getElementById('navLinks');
   navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
   navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // Transparent nav over the hero photo, solid once scrolled past it
+  const header = document.querySelector('header');
+  const toggleHeaderScrolled = () => header.classList.toggle('scrolled', window.scrollY > 40);
+  toggleHeaderScrolled();
+  window.addEventListener('scroll', toggleHeaderScrolled, { passive: true });
 
   // Scroll-reveal for gallery teaser tiles
   const galleryItems = Array.from(document.querySelectorAll('.gallery-item'));
