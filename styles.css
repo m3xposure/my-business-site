@@ -531,6 +531,9 @@ section { padding: 100px 0; }
   justify-content: center;
   z-index: 1000;
   padding: 40px;
+  touch-action: pan-y pinch-zoom;
+  overscroll-behavior: contain;
+  user-select: none;
 }
 
 .lightbox.open { display: flex; }
@@ -540,6 +543,7 @@ section { padding: 100px 0; }
   max-height: 86vh;
   object-fit: contain;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  transition: transform 0.25s ease;
 }
 
 .lightbox-close,

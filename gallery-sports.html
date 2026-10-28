@@ -112,13 +112,63 @@
   document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
   document.getElementById('lightboxPrev').addEventListener('click', () => showPhoto(currentPhoto - 1));
   document.getElementById('lightboxNext').addEventListener('click', () => showPhoto(currentPhoto + 1));
-  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+  lightbox.addEventListener('click', (e) => {
+    if (swiped) { swiped = false; return; }
+    if (e.target === lightbox) closeLightbox();
+  });
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains('open')) return;
     if (e.key === 'Escape') closeLightbox();
     if (e.key === 'ArrowLeft') showPhoto(currentPhoto - 1);
     if (e.key === 'ArrowRight') showPhoto(currentPhoto + 1);
   });
+
+  // Swipe left/right (touch or mouse drag) to change photos
+  let swipeStartX = null;
+  let swipeStartY = 0;
+  let swiped = false;
+  lightboxImg.draggable = false;
+
+  lightbox.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button')) return;
+    swipeStartX = e.clientX;
+    swipeStartY = e.clientY;
+    swiped = false;
+    lightboxImg.style.transition = 'none';
+  });
+
+  lightbox.addEventListener('pointermove', (e) => {
+    if (swipeStartX === null) return;
+    lightboxImg.style.transform = `translateX(${e.clientX - swipeStartX}px)`;
+  });
+
+  function endSwipe(e) {
+    if (swipeStartX === null) return;
+    const dx = e.clientX - swipeStartX;
+    const dy = e.clientY - swipeStartY;
+    swipeStartX = null;
+    lightboxImg.style.transition = '';
+    lightboxImg.style.transform = '';
+    if (e.type === 'pointerup' && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      swiped = true;
+      showPhoto(currentPhoto + (dx < 0 ? 1 : -1));
+    }
+  }
+  lightbox.addEventListener('pointerup', endSwipe);
+  lightbox.addEventListener('pointercancel', endSwipe);
+
+  // Two-finger trackpad swipe: one photo per gesture
+  let wheelLocked = false;
+  let wheelTimer;
+  lightbox.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+    e.preventDefault();
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => { wheelLocked = false; }, 200);
+    if (wheelLocked || Math.abs(e.deltaX) < 15) return;
+    wheelLocked = true;
+    showPhoto(currentPhoto + (e.deltaX > 0 ? 1 : -1));
+  }, { passive: false });
 </script>
 
 </body>
